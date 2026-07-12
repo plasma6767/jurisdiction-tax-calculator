@@ -1,3 +1,9 @@
+// Jurisdiction Tax Calculator
+//
+// A command-line tool that estimates personal income tax across different countries. Given a USD income, it calculates the tax owed under each supported jurisdiction's tax rules
+// (progressive brackets, flat rates, zero-tax), so a user can compare take-home pay across countries.
+//
+// Currently supported: Singapore, UAE, Bulgaria.
 package main
 
 import (
@@ -5,42 +11,54 @@ import (
 	"math"
 )
 
-type country struct {
-	Name    string
-	taxRate map[string]int
+type bracket struct {
+	upperLimit float64
+	deduction  float64
+	rate       float64
+	baseTax    float64
 }
 
+// calculateSingaporeTax
+//
+// Calculates the amount of taxes that the user would have to pay in Singapore (in U.S. dollars)
 func calculateSingaporeTax(income float64) {
 	var singTax float64
-	// extra list to loop through map keys in correct order
-	singTaxKeys := []float64{30000, 40000, 80000, 120000, 160000, 200000, 240000, 280000, 320000, 500000, 1000000, math.Inf(1)}
-	// Mapping the tax bracket, to a list of the deduction portion, the tax rate for that deduction portion, and the gross tax payable for that bracket
-	singTaxRate := map[float64][]float64{
-		30000:       {20000, 0.02, 0},
-		40000:       {30000, 0.035, 200},
-		80000:       {40000, 0.07, 550},
-		120000:      {80000, 0.115, 3350},
-		160000:      {120000, 0.15, 7950},
-		200000:      {160000, 0.18, 13950},
-		240000:      {200000, 0.19, 21150},
-		280000:      {240000, 0.195, 28750},
-		320000:      {280000, 0.20, 36550},
-		500000:      {320000, 0.22, 44550},
-		1000000:     {500000, 0.23, 84150},
-		math.Inf(1): {1000000, 0.24, 199150},
+	// Tax brackets in singapore (ordered by the upperlimit of the bracket), incomes get grouped into the brackets by whatever they are less than (35,000 gets grouped into the 40,000 bracket)
+	// baseTax is the max tax from the previous brackets tax
+	// deduction is the max of the previous bracket used to find the difference between the users income and the previous bracket, so the difference can be multiplied by the rate of that bracket
+	// rate is the tax rate for that bracket, represented in decimal percentace (.1 is 10%)
+	singaporeBrackets := []bracket{
+		{upperLimit: 30000, deduction: 20000, rate: 0.02, baseTax: 0},
+		{upperLimit: 40000, deduction: 30000, rate: 0.035, baseTax: 200},
+		{upperLimit: 80000, deduction: 40000, rate: 0.07, baseTax: 550},
+		{upperLimit: 120000, deduction: 80000, rate: 0.115, baseTax: 3350},
+		{upperLimit: 160000, deduction: 120000, rate: 0.15, baseTax: 7950},
+		{upperLimit: 200000, deduction: 160000, rate: 0.18, baseTax: 13950},
+		{upperLimit: 240000, deduction: 200000, rate: 0.19, baseTax: 21150},
+		{upperLimit: 280000, deduction: 240000, rate: 0.195, baseTax: 28750},
+		{upperLimit: 320000, deduction: 280000, rate: 0.20, baseTax: 36550},
+		{upperLimit: 500000, deduction: 320000, rate: 0.22, baseTax: 44550},
+		{upperLimit: 1000000, deduction: 500000, rate: 0.23, baseTax: 84150},
+		{upperLimit: math.Inf(1), deduction: 1000000, rate: 0.24, baseTax: 199150},
 	}
 
-	for _, value := range singTaxKeys {
-		if income < value {
+	// looping through each bracket within sinaporeBrackets
+	for _, bracket := range singaporeBrackets {
+		if income < bracket.upperLimit {
+			// if the users income is less than the upperLimit that we are looking at then we know that is the right bracket to look at to determine the users tax in Sinapore
 			if income <= 20000 {
+				// if the users income is less than $20,000 then they do not have any taxes to pay
 				singTax = 0
 				break
 			}
-			if (income - singTaxRate[value][0]) == 0 {
-				singTax = singTaxRate[value][2]
+			if (income - bracket.deduction) == 0 {
+				// if the users income is an exact bracket number then we can just simply use the baseTax to determine their taxes because they are at the max limit of that bracket
+				singTax = bracket.baseTax
 				break
 			}
-			singTax = (income-singTaxRate[value][0])*singTaxRate[value][1] + singTaxRate[value][2]
+			// The formula for their taxes is their income - the previous brackets max to get the difference, then multiply that by the rate for the piece that applies to that bracket, and add that number to the baseTax of the
+			// previous bracket
+			singTax = (income-bracket.deduction)*bracket.rate + bracket.baseTax
 			break
 		}
 	}
@@ -48,12 +66,18 @@ func calculateSingaporeTax(income float64) {
 	fmt.Printf("Singapore tax on your specific income: %.2f\n", singTax)
 }
 
+// calculateUAETax
+//
+// Calculates the amount of taxes that the user would have to pay in the UAE in U.S. dollars, which is $0 for every user because the UAE has a flat 0% tax rate on all personal income
 func calculateUAETax() {
 	// Flat 0% tax on all personal income
 	uaeTax := 0.0
 	fmt.Printf("UAE tax on your specific income: %.2f\n", uaeTax)
 }
 
+// calculateBulgariaTax
+//
+// Calculates the amount of tax that the user would have to pay in Bulgaria, which is a flat 10% rate on all personal income
 func calculateBulgariaTax(income float64) {
 	// Flat 10% tax rate on all personal income
 	bulargiaTaxRate := 0.1
