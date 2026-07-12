@@ -10,15 +10,7 @@ type country struct {
 	taxRate map[string]int
 }
 
-func usdToEuro(usd float64) string {
-	euro := float64(usd) * 0.873456
-
-	strEuro := fmt.Sprintf("%.2f", euro)
-
-	return strEuro
-}
-
-func singapore(income float64) {
+func calculateSingaporeTax(income float64) {
 	var singTax float64
 	// extra list to loop through map keys in correct order
 	singTaxKeys := []float64{30000, 40000, 80000, 120000, 160000, 200000, 240000, 280000, 320000, 500000, 1000000, math.Inf(1)}
@@ -53,7 +45,21 @@ func singapore(income float64) {
 		}
 	}
 
-	fmt.Printf("Singapore tax on your specific income: %.2f", singTax)
+	fmt.Printf("Singapore tax on your specific income: %.2f\n", singTax)
+}
+
+func calculateUAETax() {
+	// Flat 0% tax on all personal income
+	uaeTax := 0.0
+	fmt.Printf("UAE tax on your specific income: %.2f\n", uaeTax)
+}
+
+func calculateBulgariaTax(income float64) {
+	// Flat 10% tax rate on all personal income
+	bulargiaTaxRate := 0.1
+	bulgariaTax := income * bulargiaTaxRate
+
+	fmt.Printf("Bulgaria tax on your specific income: %.2f\n", bulgariaTax)
 }
 
 func main() {
@@ -61,12 +67,13 @@ func main() {
 
 	fmt.Print("Enter your Income in US Dollars: ")
 	_, err := fmt.Scan(&income)
-	strIncome := fmt.Sprintf("%.2f", income)
 	if err != nil {
 		fmt.Println("Error reading input: ", err)
 		return
 	}
 
-	fmt.Printf("You make %s US Dollars per year.", strIncome)
-	singapore(income)
+	fmt.Printf("You make %.2f US Dollars per year.\n", income)
+	calculateSingaporeTax(income)
+	calculateUAETax()
+	calculateBulgariaTax(income)
 }
