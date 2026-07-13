@@ -18,6 +18,23 @@ type bracket struct {
 	baseTax    float64
 }
 
+// poundToDollar
+//
+// Function added to help with the logic of the UK income tax since their are complications on the tax free income portion of the users income
+func dollarToPound(dollars float64) {
+	dollarToPoundRate := 0.75
+
+	pounds := dollars * dollarToPoundRate
+	return pounds
+}
+
+func poundToDollar(pounds float64) {
+	poundToDollarRate := 1.33
+
+	dollars := pounds * poundToDollarRate
+	return dollars
+}
+
 // calculateSingaporeTax
 //
 // Calculates the amount of taxes that the user would have to pay in Singapore (in U.S. dollars)
@@ -110,6 +127,22 @@ func calculateUSATax(income float64) {
 	}
 
 	fmt.Printf("USA tax on your specific income: $%.2f\n", usaTax)
+}
+
+func caclulcateUKTax(income float64) {
+	var ukTax float64
+
+	// If income is below $16,768.56 the user has a 0% tax on their income
+	zeroRate := 16778.56
+
+	zeroAllowanceCalculator := 167778.56
+
+	// Brackets for the UK, works similar to how singapore brackets work
+	ukBrackets := []bracket{
+		{upperLimit: 66859, deduction: 16718, rate: .2, baseTax: 0},
+		{upperLimit: 125140, deduction: 66859, rate: .4, baseTax: 13371.8},
+		{upperLimit: math.Inf(1), deduction: 125140, rate: .45, baseTax: 36684.2},
+	}
 }
 
 func main() {
