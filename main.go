@@ -63,7 +63,7 @@ func calculateSingaporeTax(income float64) {
 		}
 	}
 
-	fmt.Printf("Singapore tax on your specific income: %.2f\n", singTax)
+	fmt.Printf("Singapore tax on your specific income: $%.2f\n", singTax)
 }
 
 // calculateUAETax
@@ -72,7 +72,7 @@ func calculateSingaporeTax(income float64) {
 func calculateUAETax() {
 	// Flat 0% tax on all personal income
 	uaeTax := 0.0
-	fmt.Printf("UAE tax on your specific income: %.2f\n", uaeTax)
+	fmt.Printf("UAE tax on your specific income: $%.2f\n", uaeTax)
 }
 
 // calculateBulgariaTax
@@ -83,21 +83,47 @@ func calculateBulgariaTax(income float64) {
 	bulargiaTaxRate := 0.1
 	bulgariaTax := income * bulargiaTaxRate
 
-	fmt.Printf("Bulgaria tax on your specific income: %.2f\n", bulgariaTax)
+	fmt.Printf("Bulgaria tax on your specific income: $%.2f\n", bulgariaTax)
+}
+
+func calculateUSATax(income float64) {
+	var usaTax float64
+
+	// USA tax brackets, since the US uses a marginal tax system, only the upper limit of the tax bracket and the tax rate is needed
+	usaBrackets := []bracket{
+		{upperLimit: 124000, rate: .10},
+		{upperLimit: 50400, rate: .12},
+		{upperLimit: 105700, rate: .22},
+		{upperLimit: 201775, rate: .24},
+		{upperLimit: 256225, rate: .32},
+		{upperLimit: 640600, rate: .35},
+		{upperLimit: math.Inf(1), rate: .37},
+	}
+
+	// loop through the US tax brackets
+	for _, bracket := range usaBrackets {
+		if income <= bracket.upperLimit {
+			// if the income is less than or equal to the upperlimit of the tax bracket, then it falls in that brackets tax rate
+			// income multiplied by the rate gives you the amount of tax the user has to pay in the US
+			usaTax = income * bracket.rate
+		}
+	}
+
+	fmt.Printf("USA tax on your specific income: $%.2f\n", usaTax)
 }
 
 func main() {
 	var income float64
 
-	fmt.Print("Enter your Income in US Dollars: ")
+	fmt.Print("Enter your Income in US Dollars: $")
 	_, err := fmt.Scan(&income)
 	if err != nil {
 		fmt.Println("Error reading input: ", err)
 		return
 	}
 
-	fmt.Printf("You make %.2f US Dollars per year.\n", income)
 	calculateSingaporeTax(income)
 	calculateUAETax()
 	calculateBulgariaTax(income)
+	calculateUSATax(income)
 }
