@@ -7,6 +7,9 @@ burden and overall setup aligns with their goals.
 
 ## Currently supported
 - Singapore
+- UAE
+- Bulgaria
+- USA
 
 ## How to run
 ```bash
