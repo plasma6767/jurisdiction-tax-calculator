@@ -83,7 +83,7 @@ func calculateSingaporeTax(income float64) {
 		}
 	}
 
-	fmt.Printf("Singapore tax on your specific income: $%.2f\n", singTax)
+	fmt.Printf("Singapore tax on your specific income: $%.2f\n\n", singTax)
 }
 
 // calculateUAETax
@@ -92,7 +92,7 @@ func calculateSingaporeTax(income float64) {
 func calculateUAETax() {
 	// Flat 0% tax on all personal income
 	uaeTax := 0.0
-	fmt.Printf("UAE tax on your specific income: $%.2f\n", uaeTax)
+	fmt.Printf("UAE tax on your specific income: $%.2f\n\n", uaeTax)
 }
 
 // calculateBulgariaTax
@@ -103,7 +103,7 @@ func calculateBulgariaTax(income float64) {
 	bulargiaTaxRate := 0.1
 	bulgariaTax := income * bulargiaTaxRate
 
-	fmt.Printf("Bulgaria tax on your specific income: $%.2f\n", bulgariaTax)
+	fmt.Printf("Bulgaria tax on your specific income: $%.2f\n\n", bulgariaTax)
 }
 
 func calculateUSATax(income float64) {
@@ -129,16 +129,12 @@ func calculateUSATax(income float64) {
 		}
 	}
 
-	fmt.Printf("USA tax on your specific income: $%.2f\n", usaTax)
+	fmt.Printf("USA tax on your specific income: $%.2f\n\n", usaTax)
 }
 
 func caclulcateUKTax(income float64) {
 	pounds := dollarToPound(income)
 	var ukTax float64
-
-	// If income is below 12,570 pounds the user has a 0% tax on their income
-	zeroRate := 12570
-
 	var zeroAllowance float64
 
 	if pounds < 100000 {
@@ -157,12 +153,26 @@ func caclulcateUKTax(income float64) {
 		{upperLimit: 125140, deduction: 50270, rate: .4, baseTax: specialBaseTax},
 		{upperLimit: math.Inf(1), deduction: 125140, rate: .45, baseTax: 50056},
 	}
+
+	for _, bracket := range ukBrackets {
+		if pounds <= bracket.upperLimit {
+			if pounds < 12570 {
+				ukTax = 0
+			} else {
+				ukTax = (pounds-bracket.deduction)*bracket.rate + bracket.baseTax
+			}
+		}
+	}
+
+	dollars := poundToDollar(ukTax)
+
+	fmt.Printf("UK tax on your specific income: $%.2f\n", dollars)
 }
 
 func main() {
 	var income float64
 
-	fmt.Print("Enter your Income in US Dollars: $")
+	fmt.Print("Enter your Income in US Dollars: \n$")
 	_, err := fmt.Scan(&income)
 	if err != nil {
 		fmt.Println("Error reading input: ", err)
@@ -173,4 +183,5 @@ func main() {
 	calculateUAETax()
 	calculateBulgariaTax(income)
 	calculateUSATax(income)
+	caclulcateUKTax(income)
 }
