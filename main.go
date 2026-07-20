@@ -158,8 +158,10 @@ func caclulcateUKTax(income float64) {
 		if pounds <= bracket.upperLimit {
 			if pounds < 12570 {
 				ukTax = 0
+				break
 			} else {
 				ukTax = (pounds-bracket.deduction)*bracket.rate + bracket.baseTax
+				break
 			}
 		}
 	}
