@@ -83,7 +83,7 @@ func calculateSingaporeTax(income float64) {
 		}
 	}
 
-	fmt.Printf("Singapore tax on your specific income: $%.2f\n\n", singTax)
+	fmt.Printf("\nSingapore tax on your specific income: $%.2f\n\n", singTax)
 }
 
 // calculateUAETax
@@ -140,7 +140,7 @@ func caclulcateUKTax(income float64) {
 	if pounds < 100000 {
 		zeroAllowance = 12570
 	} else if pounds >= 100000 && pounds < 125140 {
-		zeroAllowance = 12570 - (pounds - 100000)
+		zeroAllowance = 12570 - (pounds-100000)/2
 	} else {
 		zeroAllowance = 0
 	}
