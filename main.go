@@ -139,7 +139,7 @@ func caclulcateUKTax(income float64) {
 
 	if pounds < 100000 {
 		zeroAllowance = 12570
-	} else if pounds > 100000 && pounds < 125140 {
+	} else if pounds >= 100000 && pounds < 125140 {
 		zeroAllowance = 12570 - (pounds - 100000)
 	} else {
 		zeroAllowance = 0
