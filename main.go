@@ -18,6 +18,26 @@ type bracket struct {
 	baseTax    float64
 }
 
+// dollarToPound
+//
+// Function added to help with the logic of the UK income tax since their are complications on the tax free income portion of the users income
+func dollarToPound(dollars float64) float64 {
+	dollarToPoundRate := 0.75
+
+	pounds := dollars * dollarToPoundRate
+	return pounds
+}
+
+// poundToDollar
+//
+// Function added to help with the logic of the UK income tax since their are complications on the tax free income portion of the users income
+func poundToDollar(pounds float64) float64 {
+	poundToDollarRate := 1.33
+
+	dollars := pounds * poundToDollarRate
+	return dollars
+}
+
 // calculateSingaporeTax
 //
 // Calculates the amount of taxes that the user would have to pay in Singapore (in U.S. dollars)
@@ -63,7 +83,7 @@ func calculateSingaporeTax(income float64) {
 		}
 	}
 
-	fmt.Printf("Singapore tax on your specific income: $%.2f\n", singTax)
+	fmt.Printf("\nSingapore tax on your specific income: $%.2f\n\n", singTax)
 }
 
 // calculateUAETax
@@ -72,7 +92,7 @@ func calculateSingaporeTax(income float64) {
 func calculateUAETax() {
 	// Flat 0% tax on all personal income
 	uaeTax := 0.0
-	fmt.Printf("UAE tax on your specific income: $%.2f\n", uaeTax)
+	fmt.Printf("UAE tax on your specific income: $%.2f\n\n", uaeTax)
 }
 
 // calculateBulgariaTax
@@ -83,7 +103,7 @@ func calculateBulgariaTax(income float64) {
 	bulargiaTaxRate := 0.1
 	bulgariaTax := income * bulargiaTaxRate
 
-	fmt.Printf("Bulgaria tax on your specific income: $%.2f\n", bulgariaTax)
+	fmt.Printf("Bulgaria tax on your specific income: $%.2f\n\n", bulgariaTax)
 }
 
 func calculateUSATax(income float64) {
@@ -109,13 +129,51 @@ func calculateUSATax(income float64) {
 		}
 	}
 
-	fmt.Printf("USA tax on your specific income: $%.2f\n", usaTax)
+	fmt.Printf("USA tax on your specific income: $%.2f\n\n", usaTax)
+}
+
+// caclulcateUKTax
+//
+// Caclulates the amount of taxes that the user would have to pay in the UK, using a similar type of logic to calculateSingaporeTax, only with special zeroAllowance
+// for those with incomes between 100,000 and 125,140 pounds
+func caclulcateUKTax(income float64) {
+	pounds := dollarToPound(income)
+	var ukTax float64
+	var zeroAllowance float64
+
+	if pounds < 100000 {
+		zeroAllowance = 12570
+	} else if pounds >= 100000 && pounds < 125140 {
+		zeroAllowance = 12570 - (pounds-100000)/2
+	} else {
+		zeroAllowance = 0
+	}
+
+	// Brackets for the UK, works similar to how singapore brackets work, except some pieces are determined at runtime if the user has a special zeroallowance that changes their brackets
+	ukBrackets := []bracket{
+		{upperLimit: zeroAllowance, deduction: 0, rate: 0, baseTax: 0},
+		{upperLimit: zeroAllowance + 37700, deduction: zeroAllowance, rate: 0.2, baseTax: 0},
+		{upperLimit: 125140, deduction: zeroAllowance + 37700, rate: 0.4, baseTax: 7540},
+		{upperLimit: math.Inf(1), deduction: 125140, rate: 0.45, baseTax: ((125140 - (zeroAllowance + 37700)) * 0.4) + 7540},
+	}
+
+	// same thing as other functions just looping through and finding when the income is less than the upperlimit of a bracket
+	for _, bracket := range ukBrackets {
+		if pounds <= bracket.upperLimit {
+			ukTax = ((pounds - bracket.deduction) * bracket.rate) + bracket.baseTax
+			break
+		}
+	}
+
+	dollars := poundToDollar(ukTax)
+
+	fmt.Printf("UK tax on your specific income: $%.2f\n", dollars)
 }
 
 func main() {
 	var income float64
 
-	fmt.Print("Enter your Income in US Dollars: $")
+	fmt.Print("Enter your Income in US Dollars: \n$")
 	_, err := fmt.Scan(&income)
 	if err != nil {
 		fmt.Println("Error reading input: ", err)
@@ -126,4 +184,5 @@ func main() {
 	calculateUAETax()
 	calculateBulgariaTax(income)
 	calculateUSATax(income)
+	caclulcateUKTax(income)
 }
