@@ -132,6 +132,10 @@ func calculateUSATax(income float64) {
 	fmt.Printf("USA tax on your specific income: $%.2f\n\n", usaTax)
 }
 
+// caclulcateUKTax
+//
+// Caclulates the amount of taxes that the user would have to pay in the UK, using a similar type of logic to calculateSingaporeTax, only with special zeroAllowance
+// for those with incomes between 100,000 and 125,140 pounds
 func caclulcateUKTax(income float64) {
 	pounds := dollarToPound(income)
 	var ukTax float64
@@ -145,24 +149,19 @@ func caclulcateUKTax(income float64) {
 		zeroAllowance = 0
 	}
 
-	specialBaseTax := (50270 - zeroAllowance) * .2
-
-	// Brackets for the UK, works similar to how singapore brackets work
+	// Brackets for the UK, works similar to how singapore brackets work, except some pieces are determined at runtime if the user has a special zeroallowance that changes their brackets
 	ukBrackets := []bracket{
-		{upperLimit: 50270, deduction: 12570, rate: .2, baseTax: 0},
-		{upperLimit: 125140, deduction: 50270, rate: .4, baseTax: specialBaseTax},
-		{upperLimit: math.Inf(1), deduction: 125140, rate: .45, baseTax: 50056},
+		{upperLimit: zeroAllowance, deduction: 0, rate: 0, baseTax: 0},
+		{upperLimit: zeroAllowance + 37700, deduction: zeroAllowance, rate: 0.2, baseTax: 0},
+		{upperLimit: 125140, deduction: zeroAllowance + 37700, rate: 0.4, baseTax: 7540},
+		{upperLimit: math.Inf(1), deduction: 125140, rate: 0.45, baseTax: ((125140 - (zeroAllowance + 37700)) * 0.4) + 7540},
 	}
 
+	// same thing as other functions just looping through and finding when the income is less than the upperlimit of a bracket
 	for _, bracket := range ukBrackets {
 		if pounds <= bracket.upperLimit {
-			if pounds < 12570 {
-				ukTax = 0
-				break
-			} else {
-				ukTax = (pounds-bracket.deduction)*bracket.rate + bracket.baseTax
-				break
-			}
+			ukTax = ((pounds - bracket.deduction) * bracket.rate) + bracket.baseTax
+			break
 		}
 	}
 
