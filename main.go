@@ -198,7 +198,7 @@ func calculateGermanyTax(income float64) {
 	// special income tax rule for germany require coding in else if statement for the 5 different formula possibilities
 	if euros < 12349 {
 		germanyTax = 0 // first zone has no income tax under 12349 euros
-	} else if euros <= 17779 {
+	} else if euros <= 17799 {
 		scaledIncome = (euros - 12348) / 10000
 		germanyTax = (914.51*scaledIncome + 1400) * scaledIncome // formula for the second zone of incomes
 	} else if euros <= 69878 {
