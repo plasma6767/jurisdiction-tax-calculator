@@ -203,12 +203,16 @@ func calculateGermanyTax(income float64) {
 		germanyTax = (914.51*scaledIncome + 1400) * scaledIncome // formula for the second zone of incomes
 	} else if euros <= 69878 {
 		scaledIncome = (euros - 17799) / 10000
-		germanyTax = (173.10*scaledIncome + 2397) * 1034.87 // third zone
+		germanyTax = (173.10*scaledIncome + 2397) + 1034.87 // third zone
 	} else if euros <= 277825 {
 		germanyTax = 0.42*(euros-69878) + 14414.87 // fourth zone
 	} else {
 		germanyTax = 0.45*euros - 19470.38 // final zone
 	}
+
+	dollars := euroToDollar(germanyTax)
+
+	fmt.Printf("Germany tax on your specific income $%.2f\n", dollars)
 }
 
 func main() {
@@ -226,4 +230,5 @@ func main() {
 	calculateBulgariaTax(income)
 	calculateUSATax(income)
 	caclulcateUKTax(income)
+	calculateGermanyTax(income)
 }
