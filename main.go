@@ -212,7 +212,7 @@ func calculateGermanyTax(income float64) {
 
 	dollars := euroToDollar(germanyTax)
 
-	fmt.Printf("Germany tax on your specific income $%.2f\n", dollars)
+	fmt.Printf("\nGermany tax on your specific income: $%.2f\n", dollars)
 }
 
 func main() {
