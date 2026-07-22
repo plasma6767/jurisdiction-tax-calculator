@@ -38,6 +38,26 @@ func poundToDollar(pounds float64) float64 {
 	return dollars
 }
 
+// dollarToEuro
+//
+// Function added to help with the logic of the Germany income tax for complications calculating their brackets
+func dollarToEuro(dollars float64) float64 {
+	dollarToEuroRate := 0.88
+
+	euros := dollars * dollarToEuroRate
+	return euros
+}
+
+// euroToDollar
+//
+// Funtion addedto help with the logic of the Germany income tax for complications calculating their brackets
+func euroToDollar(euros float64) float64 {
+	euroToDollarRate := 1.14
+
+	dollars := euros * euroToDollarRate
+	return dollars
+}
+
 // calculateSingaporeTax
 //
 // Calculates the amount of taxes that the user would have to pay in Singapore (in U.S. dollars)
