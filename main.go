@@ -190,6 +190,20 @@ func caclulcateUKTax(income float64) {
 	fmt.Printf("UK tax on your specific income: $%.2f\n", dollars)
 }
 
+func calculateGermanyTax(income float64) {
+	euros := dollarToEuro(income)
+	var germanyTax float64
+	var scaledIncome float64 // variable to help with the scaled down income portions to calculate the specific portion of income tax
+
+	// Brackets for Germanys income groups, works similar to UK and Singapore, just with a different formula to compute the tax
+	germanyBrackets := []bracket{
+		{upperLimit: 12348, baseTax: 0},
+		{upperLimit: 17799, baseTax: 0},
+		{upperLimit: 69878, baseTax: 1034.87},
+		{upperLimit: 277825, baseTax: 14414.87},
+	}
+}
+
 func main() {
 	var income float64
 
