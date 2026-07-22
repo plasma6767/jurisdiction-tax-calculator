@@ -10,6 +10,8 @@ burden and overall setup aligns with their goals.
 - UAE
 - Bulgaria
 - USA
+- UK
+- Germany
 
 ## How to run
 ```bash
