@@ -38,6 +38,26 @@ func poundToDollar(pounds float64) float64 {
 	return dollars
 }
 
+// dollarToEuro
+//
+// Function added to help with the logic of the Germany income tax for complications calculating their brackets
+func dollarToEuro(dollars float64) float64 {
+	dollarToEuroRate := 0.88
+
+	euros := dollars * dollarToEuroRate
+	return euros
+}
+
+// euroToDollar
+//
+// Funtion addedto help with the logic of the Germany income tax for complications calculating their brackets
+func euroToDollar(euros float64) float64 {
+	euroToDollarRate := 1.14
+
+	dollars := euros * euroToDollarRate
+	return dollars
+}
+
 // calculateSingaporeTax
 //
 // Calculates the amount of taxes that the user would have to pay in Singapore (in U.S. dollars)
@@ -170,6 +190,31 @@ func caclulcateUKTax(income float64) {
 	fmt.Printf("UK tax on your specific income: $%.2f\n", dollars)
 }
 
+func calculateGermanyTax(income float64) {
+	euros := dollarToEuro(income)
+	var germanyTax float64
+	var scaledIncome float64 // variable to help with the scaled down income portions to calculate the specific portion of income tax
+
+	// special income tax rule for germany require coding in else if statement for the 5 different formula possibilities
+	if euros < 12349 {
+		germanyTax = 0 // first zone has no income tax under 12349 euros
+	} else if euros <= 17799 {
+		scaledIncome = (euros - 12348) / 10000
+		germanyTax = (914.51*scaledIncome + 1400) * scaledIncome // formula for the second zone of incomes
+	} else if euros <= 69878 {
+		scaledIncome = (euros - 17799) / 10000
+		germanyTax = (173.10*scaledIncome+2397)*scaledIncome + 1034.87 // third zone
+	} else if euros <= 277825 {
+		germanyTax = 0.42*(euros-69878) + 14414.87 // fourth zone
+	} else {
+		germanyTax = 0.45*euros - 19470.38 // final zone
+	}
+
+	dollars := euroToDollar(germanyTax)
+
+	fmt.Printf("\nGermany tax on your specific income: $%.2f\n", dollars)
+}
+
 func main() {
 	var income float64
 
@@ -185,4 +230,5 @@ func main() {
 	calculateBulgariaTax(income)
 	calculateUSATax(income)
 	caclulcateUKTax(income)
+	calculateGermanyTax(income)
 }
